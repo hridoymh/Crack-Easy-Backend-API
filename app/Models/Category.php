@@ -15,6 +15,12 @@ class Category extends Model
         'cat'
     ];
 
+    protected $hidden = [
+        'id',
+        'qid',
+        'created_at',
+        'updated_at'
+    ];
     public function question()
     {
         return $this->belongsTo(Question::class,'qid');

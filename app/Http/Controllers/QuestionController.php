@@ -16,7 +16,7 @@ class QuestionController extends Controller
     public function index(Request $request,$count=20,$page=1)
     {
 
-        $ques = Question::with('categories')->skip(($page-1)*$count)->take($count)->get();
+        $ques = Question::skip(($page-1)*$count)->take($count)->get();
         // var_dump($ques[0]);
         return response()->json($ques,200); 
     }
@@ -34,7 +34,10 @@ class QuestionController extends Controller
         return response()->json($ques,200); 
     }
     
-
+    public function getq(Request $request, $id){
+        $q = Question::find($id);
+        return response()->json($q,200);
+    }
     /**
      * Show the form for creating a new resource.
      */
@@ -53,15 +56,14 @@ class QuestionController extends Controller
         //
         // var_dump($request->all());
         $input = $request->all();
-        // echo $input['cat'][0];
+        
         $validator = Validator::make($input,[
             'question'=>'required|unique:questions,questionStatement',
             'a'=>'required',
             'b'=>'required',
             'c'=>'required',
             'd'=>'required',
-            'ans'=>'required',
-            'prevoc'=>'required'
+            'ans'=>'required'
             
         ]);
         if($validator->fails()){
@@ -74,8 +76,7 @@ class QuestionController extends Controller
             'b'=> $input['b'],
             'c'=> $input['c'],
             'd'=> $input['d'],
-            'ans'=> $input['ans'],
-            'prevoc'=> $input['prevoc']
+            'ans'=> $input['ans']
             
         ];
 
@@ -115,9 +116,54 @@ class QuestionController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Question $question)
+    public function edit(Request $request, $id)
     {
-        //
+        $user = json_decode($request->all()['data'])[0];
+        $input = $request->all();
+        
+        $validator = Validator::make($input,[
+            'question'=>'required|unique:questions,questionStatement',
+            'a'=>'required',
+            'b'=>'required',
+            'c'=>'required',
+            'd'=>'required',
+            'ans'=>'required' 
+        ]);
+
+        if($validator->fails()){
+            return response()->json($validator->messages(),400);
+        }
+        $data = [
+            'ownerid'=>$user->id,
+            'questionStatement'=> $input['question'],
+            'a'=> $input['a'],
+            'b'=> $input['b'],
+            'c'=> $input['c'],
+            'd'=> $input['d'],
+            'ans'=> $input['ans']    
+        ];
+
+        $question = Question::find($id);
+        $question->update($data);
+        $question->categories()->delete();
+        echo "done done";
+        $prep = [];
+        foreach($input['cats'] as $cat){
+            $temp = [
+                'qid'=>$question->id,
+                'cat'=>$cat
+            ];
+            // DB::beginTransaction();
+            Category::create($temp);
+            // DB::commit();
+            // array_push($prep,$temp);
+        }
+        // print_r($prep);
+        // Category::create($prep);
+
+        return response()->json(["status"=>"done"],200);
+
+        
     }
 
     /**

@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\QuestionController;
+use App\Http\Controllers\AnswerController;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,18 +31,27 @@ Route::get('getquestions/cat/{cat}/{count?}/{page?}',[QuestionController::class,
 Route::middleware('gauth')->group(function(){
     // add question
     Route::post('addquestion/',[QuestionController::class,'store']);
-    
     // get question list(/count/page)
     Route::post('getquestions/{count?}/{page?}',[QuestionController::class,'index']);
-    // get question list by category(/cat/count/page)
-    // Route::post('getquestions/cat/{cat}/{count?}/{page?}',[QuestionController::class,'index']);
     // get question list by exam(/xmid/)
     // xm answer 
     // create exam
-    // get question 
     // answer
+    Route::post('anssubmit/{qid}',[AnswerController::class,'store']);
     // get user stat
+    // edit question
+    Route::post('editquestion/{id}',[QuestionController::class,'edit']);
+
 });
 
 Route::get('getquestions/{count?}/{page?}',[QuestionController::class,'index']);
+// get question 
+Route::get('getquestion/{id}',[QuestionController::class,'getq']);
+// get question list by category(/cat/count/page)
 Route::get('getbycat/{cat}/{count?}/{page?}',[QuestionController::class,'getbycat']);
+
+Route::get('dropallcat/{id}',function($id){
+    $q = \App\Models\Question::find($id);
+    $q->categories()->delete();
+    return response()->json(['status'=>'done'],200);
+});

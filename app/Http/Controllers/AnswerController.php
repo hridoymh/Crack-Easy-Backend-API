@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Answer;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class AnswerController extends Controller
 {
@@ -28,7 +29,24 @@ class AnswerController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $input = $request->all();
+        $validator = Validator::make($input,[
+            'userid'=>'required',
+            'qid'=>'required',
+            'status'=>'required'
+        ]);
+        if($validator->fails()){
+            return response()->json($validator->messages(),400);
+        }
+        $data = [
+            'userid'=>$input['userid'],
+            'qid'=>$input['qid'],
+            'status'=>$input['status'],
+        ];
+        Anwser::create($data);
+
+        return response()->json(['status'=>'success'],200);
+
     }
 
     /**
