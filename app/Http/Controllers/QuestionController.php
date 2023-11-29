@@ -20,6 +20,14 @@ class QuestionController extends Controller
         // var_dump($ques[0]);
         return response()->json($ques,200); 
     }
+    
+    public function getRand(Request $request,$count=20)
+    {
+
+        $ques = Question::inRandomOrder()->limit($count)->get();
+        // var_dump($ques[0]);
+        return response()->json($ques,200); 
+    }
 
     public function getByCat(Request $request,$cat,$count=20,$page=0)
     {
@@ -33,6 +41,20 @@ class QuestionController extends Controller
         // $ques = Question::orderBy('created_at', 'desc')->skip(($page-1)*$count)->take($count)->get();
         return response()->json($ques,200); 
     }
+
+    public function getRandByCat(Request $request,$cat,$count=20)
+    {
+        $cats = Category::where('cat',$cat)->inRandomOrder()->limit($count)->get();
+
+        $ques = array();
+        foreach ($cats as $cat) {
+            array_push($ques,$cat->question);
+        }
+        
+        // $ques = Question::orderBy('created_at', 'desc')->skip(($page-1)*$count)->take($count)->get();
+        return response()->json($ques,200); 
+    }
+    
     
     public function getq(Request $request, $id){
         $q = Question::find($id);

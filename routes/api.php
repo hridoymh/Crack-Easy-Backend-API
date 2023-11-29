@@ -37,7 +37,7 @@ Route::middleware('gauth')->group(function(){
     // xm answer 
     // create exam
     // answer
-    Route::post('anssubmit/{qid}',[AnswerController::class,'store']);
+    Route::post('anssubmit/',[AnswerController::class,'store']);
     // get user stat
     // edit question
     Route::post('editquestion/{id}',[QuestionController::class,'edit']);
@@ -45,6 +45,8 @@ Route::middleware('gauth')->group(function(){
 });
 
 Route::get('getquestions/{count?}/{page?}',[QuestionController::class,'index']);
+Route::get('getrand/{count?}',[QuestionController::class,'getRand']);
+Route::get('getrandbycat/{cat?}/{count?}',[QuestionController::class,'getRandByCat']);
 // get question 
 Route::get('getquestion/{id}',[QuestionController::class,'getq']);
 // get question list by category(/cat/count/page)

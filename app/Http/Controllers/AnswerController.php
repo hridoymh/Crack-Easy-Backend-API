@@ -29,21 +29,21 @@ class AnswerController extends Controller
      */
     public function store(Request $request)
     {
+        $user = json_decode($request->all()['data'])[0];
         $input = $request->all();
         $validator = Validator::make($input,[
-            'userid'=>'required',
             'qid'=>'required',
-            'status'=>'required'
+            'status'=>'required|integer|between:0,1'
         ]);
         if($validator->fails()){
             return response()->json($validator->messages(),400);
         }
         $data = [
-            'userid'=>$input['userid'],
+            'userid'=>$user->id,
             'qid'=>$input['qid'],
             'status'=>$input['status'],
         ];
-        Anwser::create($data);
+        Answer::create($data);
 
         return response()->json(['status'=>'success'],200);
 
